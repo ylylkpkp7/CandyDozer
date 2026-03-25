@@ -9,6 +9,7 @@ public class Shooter : MonoBehaviour
     const int RecoverySeconds = 3;
 
     int shotPower = MaxShotPower;
+    AudioSource shotSound;
 
     public GameObject[] candyPrefabs;
     public Transform candyParentTransform;
@@ -16,6 +17,11 @@ public class Shooter : MonoBehaviour
     public float shotForce;
     public float shotTorque;
     public float baseWidth;
+
+    void Start()
+    {
+        shotSound = GetComponent<AudioSource>();
+    }
 
     void Update()
     {
@@ -69,6 +75,9 @@ public class Shooter : MonoBehaviour
         candyManager.ConsumeCandy();
         //ShotPowerを消費
         ConsumePower();
+
+        //サウンドを再生
+        shotSound.Play();
     }
 
     void OnGUI()
@@ -85,5 +94,13 @@ public class Shooter : MonoBehaviour
     {
         //ShotPowerを消費すると同時に回復のカウントをスタート
         shotPower--;
+        StartCoroutine(RecoveryPower());
+
+        IEnumerator RecoveryPower()
+        {
+            //一定秒数待った後にShotPowerを回復
+            yield return new WaitForSeconds(RecoverySeconds);
+            shotPower++;
+        }
     }
 }
